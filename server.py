@@ -1,6 +1,6 @@
 from flask import Flask
 app = Flask(__name__)
-from flask import request, jsonify
+from flask import request, jsonify, abort
 import json
 
 @app.route('/')
@@ -30,9 +30,13 @@ def status():
       if args['key'] in d:
          response[args['key']]= d[args['key']]
       else:
-         response['status_code'] = 404
-         response['message'] = "key not found"
+         abort(400, description="Bad Request : key not found")
       return jsonify(response)
+
+@app.errorhandler(400)
+def page_not_found(error):
+   return jsonify(error=str(error)), 400
+
 
 # use jsonify 
 if __name__ == "__main__":
